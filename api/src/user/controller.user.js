@@ -85,4 +85,82 @@ userController.loginUser = async (req, res) => {
     });
   }
 };
+userController.getUsers = async (req, res) => {
+  try {
+    let getUser = await userServices.getUsers();
+
+    if (!getUser.length) {
+      return res.send({
+        status: "OK",
+        msg: "user not found",
+        data: null,
+      });
+    }
+    return res.send({
+      status: "OK",
+      msg: "User Get successfully",
+      data: getUser,
+    });
+  } catch (error) {
+    return res.send({
+      status: "Error",
+      msg: "something went wrong",
+      data: null,
+    });
+  }
+};
+// userController.UpdateProfile = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     if (id) {
+//       const { name, email, password } = req.body;
+//       const user = await User.findOneAndUpdate(
+//         { _id: id },
+//         { name, email },
+//         { new: true }
+//       );
+//       console.log(user);
+//       console.log(id);
+//       console.log(name, email, password);
+//       res
+//         .status(200)
+//         .send({ status: "OK", msg: "update successfully", data: user });
+//     } else {
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+userController.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // if (!id) {
+    //   return res
+    //     .status(400)
+    //     .send({ status: "Err", msg: "Invalid ID", data: null });
+    // }
+
+    const deleted = await userServices.deleteUser(id, {
+      $set: { isDeleted: true },
+    });
+
+    if (deleted === null) {
+      return res.status(404).send({
+        status: "ERR",
+        msg: "user Not Found",
+        data: null,
+      });
+    }
+    return res
+      .status(200)
+      .send({ status: "OK", msg: "user deleted successfully", data: deleted });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .send({ status: "Err", msg: "Something went wrong", data: null });
+  }
+};
+
 module.exports = userController;
