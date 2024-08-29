@@ -7,7 +7,7 @@ UserServices.registerUser = async ({ name, email, password }) => {
   try {
     console.log("first");
     const hash = bcrypt.hashSync(password, 10);
-    console.log(hash, "pass");
+
     let newUser = await User.create({ name, email, password: hash });
     console.log(newUser, "newUser");
     return { status: "OK", data: newUser };
@@ -52,10 +52,18 @@ UserServices.findUserByEmailAndPassword = async (email, password) => {
 UserServices.getUsers = async () => {
   return User.find({});
 };
-UserServices.finduser = async (matchField) => {
-  return User.findOne({ matchField });
-};
+// UserServices.finduser = async (matchField) => {
+//   return User.findOne({ matchField });
+// };
 UserServices.deleteUser = async (id, updateFeild) => {
   return User.findByIdAndUpdate({ _id: id }, { ...updateFeild }, { new: true });
 };
+UserServices.updateUserData = async (id, { name, email, password }) => {
+  const hash = bcrypt.hashSync(password, 10);
+  return User.findByIdAndUpdate({ _id: id }, { name, email, password:hash });
+};
+
+// UserServices.loginUser=async(email,password)=>{
+// return User.findOne({email,password})
+// }
 module.exports = UserServices;
